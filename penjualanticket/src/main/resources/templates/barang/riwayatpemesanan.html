@@ -1,0 +1,29 @@
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>Faktur</th>
+<th>Event</th>
+<th>Qty</th>
+<th>Total</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr th:each="r : ${riwayat}">
+
+<td th:text="${r.noFaktur}"></td>
+<td th:text="${r.namaEvent}"></td>
+<td th:text="${r.qty}"></td>
+<td th:text="${r.totalBayar}"></td>
+
+</tr>
+
+</tbody>
+
+</table>

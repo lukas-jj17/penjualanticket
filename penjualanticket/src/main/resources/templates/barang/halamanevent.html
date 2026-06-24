@@ -1,0 +1,38 @@
+<div class="container mt-5">
+
+<h2>Daftar Event</h2>
+
+<div class="row">
+
+<div class="col-md-4"
+     th:each="event : ${events}">
+
+<div class="card">
+
+<img th:src="@{'/uploads/' + ${event.photo}}"
+     class="card-img-top">
+
+<div class="card-body">
+
+<h5 th:text="${event.nameEvent}"></h5>
+
+<p>
+Rp
+<span th:text="${event.price}"></span>
+</p>
+
+<a th:href="@{'/event/detail/'+${event.idTiket}}"
+   class="btn btn-primary">
+
+Lihat Detail
+
+</a>
+
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>

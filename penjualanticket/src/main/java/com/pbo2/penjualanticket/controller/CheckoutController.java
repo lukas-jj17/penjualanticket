@@ -1,7 +1,10 @@
 package com.pbo2.penjualanticket.controller;
 
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Map;
+=======
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import com.pbo2.penjualanticket.model.*;
 import com.pbo2.penjualanticket.Repository.*;
 import com.pbo2.penjualanticket.service.PenjualanService;
+<<<<<<< HEAD
 import com.pbo2.penjualanticket.service.PaymentService;
+=======
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 
 import jakarta.servlet.http.HttpSession;
 
@@ -22,6 +28,7 @@ public class CheckoutController {
     private TicketRepository ticketRepo;
 
     @Autowired
+<<<<<<< HEAD
     private PenjualanRepository penjualanRepo;
 
     @Autowired
@@ -30,6 +37,10 @@ public class CheckoutController {
     @Autowired
     private PaymentService paymentService;
 
+=======
+    private PenjualanService penjualanService;
+
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
     @GetMapping("/checkout/{id}")
     public String checkoutPage(
             @PathVariable Integer id,
@@ -52,7 +63,10 @@ public class CheckoutController {
     public String saveCheckout(
             @RequestParam Integer idTicket,
             @RequestParam Integer qty,
+<<<<<<< HEAD
             @RequestParam(value = "paymentMethod", required = false) String paymentMethod,
+=======
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
             HttpSession session){
 
         Customer customer = (Customer) session.getAttribute("user");
@@ -72,6 +86,7 @@ public class CheckoutController {
         try {
             Penjualan penjualan = penjualanService.buatPenjualan(
                     customer, List.of(new CartItem(ticket, qty)));
+<<<<<<< HEAD
             
             penjualan.setPaymentMethod(paymentMethod != null && !paymentMethod.trim().isEmpty() ? paymentMethod.toUpperCase() : "VA (HOSTED)");
             penjualan.setPaymentStatus("PENDING");
@@ -96,6 +111,9 @@ public class CheckoutController {
                 penjualanRepo.save(penjualan);
                 return "redirect:/nota/" + penjualan.getIdPenjualan();
             }
+=======
+            return "redirect:/nota/" + penjualan.getIdPenjualan();
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
         } catch (PenjualanService.StockException e) {
             return "redirect:/checkout/" + idTicket + "?error=insufficient_stock";
         }

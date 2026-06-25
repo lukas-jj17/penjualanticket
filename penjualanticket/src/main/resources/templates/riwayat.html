@@ -27,9 +27,13 @@
             <tr>
                 <th>No Faktur</th>
                 <th>Tanggal</th>
+<<<<<<< HEAD
                 <th>Metode</th>
                 <th>Total</th>
                 <th>Status</th>
+=======
+                <th>Total</th>
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -37,6 +41,7 @@
             <tr th:each="r : ${riwayat}">
                 <td th:text="${r.noFaktur}"></td>
                 <td th:text="${r.tanggal}"></td>
+<<<<<<< HEAD
                 <td class="text-uppercase fw-bold" th:text="${r.paymentMethod}"></td>
                 <td>Rp. <span th:text="${r.totalBayar}"></span></td>
                 <td>
@@ -46,6 +51,10 @@
                     <span th:if="${r.paymentStatus == 'FAILED'}" class="badge bg-danger">Gagal</span>
                 </td>
                 <td>
+=======
+                <td>Rp. <span th:text="${r.totalBayar}"></span></td>
+                <td>
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
                     <a th:href="@{'/nota/' + ${r.idPenjualan}}" class="btn btn-primary btn-sm">Lihat Nota</a>
                 </td>
             </tr>

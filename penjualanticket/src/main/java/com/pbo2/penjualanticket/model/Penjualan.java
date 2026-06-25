@@ -22,6 +22,7 @@ public class Penjualan {
     @JoinColumn(name = "id_customer")
     private Customer customer;
 
+<<<<<<< HEAD
     private String paymentStatus = "PENDING";
 
     private String paymentMethod;
@@ -31,6 +32,8 @@ public class Penjualan {
 
     private String referenceId;
 
+=======
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
     public Penjualan() {}
 
     public Integer getIdPenjualan() {
@@ -72,6 +75,7 @@ public class Penjualan {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
+<<<<<<< HEAD
 
     public String getPaymentStatus() {
         return paymentStatus;
@@ -104,4 +108,6 @@ public class Penjualan {
     public void setReferenceId(String referenceId) {
         this.referenceId = referenceId;
     }
+=======
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 }

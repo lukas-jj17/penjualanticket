@@ -16,6 +16,14 @@ import com.pbo2.penjualanticket.Repository.DetailPenjualanRepository;
 import com.pbo2.penjualanticket.Repository.PenjualanRepository;
 import com.pbo2.penjualanticket.Repository.TicketRepository;
 
+<<<<<<< HEAD
+=======
+/**
+ * Logika bisnis penjualan tiket. Dipakai bersama oleh checkout langsung
+ * (1 tiket) maupun checkout keranjang (banyak tiket), sehingga tidak ada
+ * duplikasi pembuatan Penjualan/DetailPenjualan.
+ */
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 @Service
 public class PenjualanService {
 
@@ -24,13 +32,22 @@ public class PenjualanService {
     private final TicketRepository ticketRepo;
 
     public PenjualanService(PenjualanRepository penjualanRepo,
+<<<<<<< HEAD
             DetailPenjualanRepository detailRepo,
             TicketRepository ticketRepo) {
+=======
+                            DetailPenjualanRepository detailRepo,
+                            TicketRepository ticketRepo) {
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
         this.penjualanRepo = penjualanRepo;
         this.detailRepo = detailRepo;
         this.ticketRepo = ticketRepo;
     }
 
+<<<<<<< HEAD
+=======
+    /** Dilempar saat stok tiket tidak mencukupi. */
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
     public static class StockException extends RuntimeException {
         public StockException(String message) {
             super(message);
@@ -38,10 +55,18 @@ public class PenjualanService {
     }
 
     /**
+<<<<<<< HEAD
      *
      *
      * @return
      * @throws StockException
+=======
+     * Membuat satu transaksi penjualan dari daftar item.
+     * Memvalidasi stok, menyimpan Penjualan + DetailPenjualan, dan mengurangi stok.
+     *
+     * @return Penjualan yang tersimpan
+     * @throws StockException jika ada item yang stoknya tidak cukup
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
      */
     @Transactional
     public Penjualan buatPenjualan(Customer customer, List<CartItem> items) {
@@ -50,6 +75,10 @@ public class PenjualanService {
             throw new StockException("Keranjang kosong.");
         }
 
+<<<<<<< HEAD
+=======
+        // Validasi stok seluruh item terlebih dahulu (ambil data terbaru dari DB)
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
         double total = 0.0;
         for (CartItem item : items) {
             Ticket ticket = ticketRepo.findById(item.getTicket().getIdTiket())
@@ -65,6 +94,10 @@ public class PenjualanService {
             total += ticket.getPrice() * qty;
         }
 
+<<<<<<< HEAD
+=======
+        // Buat header penjualan
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
         Penjualan penjualan = new Penjualan();
         penjualan.setCustomer(customer);
         penjualan.setTanggal(LocalDate.now());
@@ -72,6 +105,10 @@ public class PenjualanService {
         penjualan.setTotalBayar(total);
         penjualanRepo.save(penjualan);
 
+<<<<<<< HEAD
+=======
+        // Buat detail + kurangi stok
+>>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
         for (CartItem item : items) {
             Ticket ticket = ticketRepo.findById(item.getTicket().getIdTiket()).get();
             int qty = (item.getQty() == null || item.getQty() < 1) ? 1 : item.getQty();

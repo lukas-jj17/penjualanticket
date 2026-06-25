@@ -1,0 +1,39 @@
+<div class="nota">
+
+<h2>NOTA PEMBELIAN</h2>
+
+<hr>
+
+<p>No Faktur :
+<span th:text="${penjualan.noFaktur}">
+</span>
+</p>
+
+<p>Nama Customer :
+<span th:text="${customer.name}">
+</span>
+</p>
+
+<p>Event :
+<span th:text="${ticket.nameEvent}">
+</span>
+</p>
+
+<p>Jumlah :
+<span th:text="${detail.qty}">
+</span>
+</p>
+
+<p>Total :
+Rp
+<span th:text="${penjualan.totalBayar}">
+</span>
+</p>
+
+<button onclick="window.print()">
+
+Cetak Nota
+
+</button>
+
+</div>

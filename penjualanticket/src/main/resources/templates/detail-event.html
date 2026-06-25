@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Event</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard">TicketHub</a>
+        <div>
+            <a href="/cart" class="btn btn-outline-light btn-sm">Keranjang</a>
+            <a href="/dashboard" class="btn btn-outline-light btn-sm">Kembali</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="row">
+
+        <div class="col-md-6">
+            <img th:if="${ticket.photo != null}"
+                 th:src="@{'/uploads/' + ${ticket.photo}}" class="img-fluid rounded">
+            <img th:unless="${ticket.photo != null}"
+                 src="https://placehold.co/600x400?text=Event" class="img-fluid rounded">
+        </div>
+
+        <div class="col-md-6">
+            <h2 th:text="${ticket.nameEvent}"></h2>
+            <h4 class="text-success">Rp. <span th:text="${ticket.price}"></span></h4>
+            <p th:text="${ticket.description}"></p>
+            <p>Stok : <span th:text="${ticket.stock}"></span></p>
+
+            <div class="d-flex gap-2">
+                <!-- Beli langsung 1 tiket -->
+                <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-success">
+                    Beli Sekarang
+                </a>
+
+                <!-- Tambah ke keranjang -->
+                <form th:action="@{/cart/add}" method="post">
+                    <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                    <button class="btn btn-outline-primary">+ Keranjang</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

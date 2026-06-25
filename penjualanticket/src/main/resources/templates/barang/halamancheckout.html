@@ -1,0 +1,19 @@
+<form th:action="@{/checkout}" method="post">
+
+<input type="hidden"
+       name="idTicket"
+       th:value="${ticket.idTiket}">
+
+<label>Jumlah Ticket</label>
+
+<input type="number"
+       name="qty"
+       class="form-control">
+
+<button class="btn btn-success mt-3">
+
+Pesan Sekarang
+
+</button>
+
+</form>

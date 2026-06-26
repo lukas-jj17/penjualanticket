@@ -1,14 +1,10 @@
 package com.pbo2.penjualanticket.controller;
 
-<<<<<<< HEAD
 import java.util.List;
-=======
->>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-<<<<<<< HEAD
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,11 +12,6 @@ import com.pbo2.penjualanticket.Repository.CustomerRepository;
 import com.pbo2.penjualanticket.Repository.TicketRepository;
 import com.pbo2.penjualanticket.Repository.PenjualanRepository;
 import com.pbo2.penjualanticket.model.Penjualan;
-=======
-
-import com.pbo2.penjualanticket.Repository.CustomerRepository;
-import com.pbo2.penjualanticket.Repository.TicketRepository;
->>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 
 @Controller
 public class AdminController {
@@ -31,12 +22,8 @@ public class AdminController {
     @Autowired
     TicketRepository ticketRepo;
 
-<<<<<<< HEAD
     @Autowired
     PenjualanRepository penjualanRepo;
-
-=======
->>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
     @GetMapping("/admin/dashboard")
     public String adminDashboard(Model model) {
 
@@ -48,7 +35,6 @@ public class AdminController {
                 "totalEvent",
                 ticketRepo.count());
 
-<<<<<<< HEAD
         List<Penjualan> suksesList = penjualanRepo.findAll().stream()
                 .filter(p -> "SUCCESS".equalsIgnoreCase(p.getPaymentStatus()))
                 .toList();
@@ -79,10 +65,4 @@ public class AdminController {
         }
         return "redirect:/admin/riwayat";
     }
-
-=======
-        return "admin/dashbord";
-    }
-
->>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 }

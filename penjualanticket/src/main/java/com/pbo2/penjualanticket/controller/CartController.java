@@ -13,7 +13,10 @@ import com.pbo2.penjualanticket.model.Customer;
 import com.pbo2.penjualanticket.model.Penjualan;
 import com.pbo2.penjualanticket.model.Ticket;
 import com.pbo2.penjualanticket.Repository.TicketRepository;
+import com.pbo2.penjualanticket.Repository.PenjualanRepository;
 import com.pbo2.penjualanticket.service.PenjualanService;
+import com.pbo2.penjualanticket.service.PaymentService;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -29,7 +32,13 @@ public class CartController {
     private TicketRepository ticketRepo;
 
     @Autowired
+    private PenjualanRepository penjualanRepo;
+
+    @Autowired
     private PenjualanService penjualanService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @SuppressWarnings("unchecked")
     private List<CartItem> getCart(HttpSession session) {
@@ -91,7 +100,10 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public String checkoutCart(HttpSession session, Model model) {
+    public String checkoutCart(
+            @RequestParam(value = "paymentMethod", required = false) String paymentMethod,
+            HttpSession session,
+            Model model) {
 
         Customer customer = (Customer) session.getAttribute("user");
         if (customer == null) {
@@ -105,8 +117,32 @@ public class CartController {
 
         try {
             Penjualan penjualan = penjualanService.buatPenjualan(customer, cart);
+            
+            penjualan.setPaymentMethod(paymentMethod != null && !paymentMethod.trim().isEmpty() ? paymentMethod.toUpperCase() : "VA (HOSTED)");
+            penjualan.setPaymentStatus("PENDING");
+
+            // Request payment link from bayar.gg
+            Map<String, String> paymentResult = paymentService.createPayment(
+                    penjualan.getTotalBayar(),
+                    "Pembelian Tiket dari Keranjang",
+                    paymentMethod,
+                    penjualan.getNoFaktur(),
+                    penjualan.getIdPenjualan()
+            );
+
             session.removeAttribute("cart");
-            return "redirect:/nota/" + penjualan.getIdPenjualan();
+
+            if (paymentResult != null) {
+                penjualan.setPaymentUrl(paymentResult.get("payment_url"));
+                penjualan.setReferenceId(paymentResult.get("reference_id"));
+                penjualanRepo.save(penjualan);
+                
+                // Redirect user to bayar.gg payment page
+                return "redirect:" + paymentResult.get("payment_url");
+            } else {
+                penjualanRepo.save(penjualan);
+                return "redirect:/nota/" + penjualan.getIdPenjualan();
+            }
         } catch (PenjualanService.StockException e) {
             model.addAttribute("cart", cart);
             model.addAttribute("total",

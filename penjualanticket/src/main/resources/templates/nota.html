@@ -16,7 +16,6 @@
 
             <p class="mb-1">No Faktur : <span th:text="${penjualan.noFaktur}"></span></p>
             <p class="mb-1">Tanggal : <span th:text="${penjualan.tanggal}"></span></p>
-<<<<<<< HEAD
             <p th:if="${penjualan.customer != null}" class="mb-1">
                 Customer : <span th:text="${penjualan.customer.name}"></span>
             </p>
@@ -38,11 +37,6 @@
                     Bayar Sekarang (bayar.gg)
                 </a>
             </div>
-=======
-            <p th:if="${penjualan.customer != null}">
-                Customer : <span th:text="${penjualan.customer.name}"></span>
-            </p>
->>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
 
             <table class="table table-bordered mt-3">
                 <thead>
@@ -68,15 +62,9 @@
             </h4>
 
             <div class="d-flex gap-2 mt-3">
-<<<<<<< HEAD
                 <button onclick="window.print()" class="btn btn-primary" th:disabled="${penjualan.paymentStatus != 'SUCCESS'}">Cetak</button>
                 <a th:href="@{'/nota/' + ${penjualan.idPenjualan} + '/pdf'}"
                    class="btn btn-danger" th:classappend="${penjualan.paymentStatus != 'SUCCESS'} ? 'disabled' : ''">Unduh PDF</a>
-=======
-                <button onclick="window.print()" class="btn btn-primary">Cetak</button>
-                <a th:href="@{'/nota/' + ${penjualan.idPenjualan} + '/pdf'}"
-                   class="btn btn-danger">Unduh PDF</a>
->>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
                 <a href="/dashboard" class="btn btn-secondary">Kembali ke Beranda</a>
             </div>
 

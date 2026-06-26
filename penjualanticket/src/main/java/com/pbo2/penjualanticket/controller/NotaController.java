@@ -58,14 +58,10 @@ public class NotaController {
             return;
         }
 
-<<<<<<< HEAD
         if (!"SUCCESS".equalsIgnoreCase(penjualan.getPaymentStatus())) {
             response.sendRedirect("/nota/" + id + "?error=unpaid");
             return;
         }
-
-=======
->>>>>>> 161c0cbacf056bd082d7edcb309739a73a669822
         List<DetailPenjualan> details = detailRepo.findByPenjualanIdPenjualan(id);
 
         response.setContentType("application/pdf");

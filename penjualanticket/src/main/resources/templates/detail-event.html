@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Event - TicketHub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/Style.css}">
 </head>
 <body>
@@ -19,55 +20,159 @@
     </div>
 </nav>
 
-<div class="container mt-5">
-    <div class="card p-4 p-md-5">
-        <div class="row g-4 md-g-5">
-            <div class="col-md-6">
-                <div class="position-relative rounded-4 overflow-hidden shadow-lg border border-secondary border-opacity-20" style="max-height: 480px;">
-                    <img th:if="${ticket.photo != null}"
-                         th:src="@{'/uploads/' + ${ticket.photo}}" class="w-100 h-100 object-fit-cover img-fluid" style="border-radius: 12px;">
-                    <img th:unless="${ticket.photo != null}"
-                         src="https://placehold.co/600x400?text=Event+Poster" class="w-100 h-100 object-fit-cover img-fluid" style="border-radius: 12px;">
+<!-- Blurred Event Banner Header -->
+<div class="event-banner-container" th:style="${ticket.photo != null} ? 'background-image: url(/uploads/' + ${ticket.photo} + ');' : 'background-image: url(https://placehold.co/1200x400?text=Event);'">
+    <div class="container event-banner-content">
+        <h1 class="fw-bold text-white mb-3" th:text="${ticket.nameEvent}"></h1>
+        <div class="d-flex flex-wrap gap-4 text-white text-opacity-80 small mb-0">
+            <span class="d-flex align-items-center gap-2"><i class="bi bi-geo-alt-fill text-warning"></i> Graha Unesa Surabaya, Kota Surabaya</span>
+            <span class="d-flex align-items-center gap-2"><i class="bi bi-calendar-event-fill text-warning"></i> 11 Sep 2026, 19:00 - 22:00 WIB</span>
+            <span class="d-flex align-items-center gap-2">
+                <i class="bi bi-tags-fill text-warning"></i> 
+                <span th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}"></span> • Musik • Lainnya
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-2" style="padding-bottom: 80px;">
+    <div class="row g-4">
+        <!-- Left Column (Event Tabs & Info) -->
+        <div class="col-lg-8">
+            <!-- Customized Tabs Header -->
+            <ul class="nav nav-tabs-custom mb-4" id="eventTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="deskripsi-tab" data-bs-toggle="tab" data-bs-target="#deskripsi" type="button" role="tab" aria-controls="deskripsi" aria-selected="true">Deskripsi</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tiket-tab" data-bs-toggle="tab" data-bs-target="#tiket" type="button" role="tab" aria-controls="tiket" aria-selected="false">Tiket</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="syarat-tab" data-bs-toggle="tab" data-bs-target="#syarat" type="button" role="tab" aria-controls="syarat" aria-selected="false">Syarat dan Ketentuan</button>
+                </li>
+            </ul>
+
+            <!-- Tabs Content -->
+            <div class="tab-content" id="eventTabContent">
+                <!-- Deskripsi Pane -->
+                <div class="tab-pane fade show active" id="deskripsi" role="tabpanel" aria-labelledby="deskripsi-tab">
+                    <div class="card p-4 p-md-5">
+                        <h4 class="fw-bold mb-4 text-white">Deskripsi Event</h4>
+                        <p class="text-secondary-emphasis" style="line-height: 1.8; white-space: pre-line;" th:text="${ticket.description != null ? ticket.description : 'Tidak ada deskripsi rinci untuk event ini.'}"></p>
+                    </div>
+                </div>
+
+                <!-- Tiket Pane -->
+                <div class="tab-pane fade" id="tiket" role="tabpanel" aria-labelledby="tiket-tab">
+                    <div class="card p-4 p-md-5">
+                        <h4 class="fw-bold mb-4 text-white"><i class="bi bi-ticket-perforated-fill text-warning me-2"></i> Kategori Tiket</h4>
+                        
+                        <!-- Single General Ticket Item based on Event Model -->
+                        <div class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
+                            <div>
+                                <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
+                                <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
+                                <h5 class="fw-bold text-white mb-1">GENERAL SALES (ALL IN)</h5>
+                                <small class="text-secondary">Penjualan berakhir 11 Sep 2026 • 19:00 WIB</small>
+                            </div>
+                            <div class="text-sm-end mt-3 mt-sm-0">
+                                <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.price, 0, 'POINT', 0, 'COMMA')}"></span></h4>
+                                <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
+                                
+                                <div class="d-flex gap-2 justify-content-sm-end">
+                                    <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
+                                    <form th:action="@{/cart/add}" method="post" class="m-0">
+                                        <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                                        <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Syarat Pane -->
+                <div class="tab-pane fade" id="syarat" role="tabpanel" aria-labelledby="syarat-tab">
+                    <div class="card p-4 p-md-5">
+                        <h4 class="fw-bold mb-4 text-white">Syarat & Ketentuan Umum</h4>
+                        <ul class="text-secondary ps-3 d-flex flex-column gap-3 mb-0" style="line-height: 1.8; font-size: 0.95rem;">
+                            <li>Tiket yang sudah dibeli bersifat mutlak, tidak dapat ditukar, dibatalkan, atau diuangkan kembali dengan alasan apa pun.</li>
+                            <li>Pembeli wajib membawa dan menunjukkan e-ticket resmi yang valid beserta kartu identitas fisik di gerbang pemeriksaan tiket.</li>
+                            <li>Pihak penyelenggara berhak melarang masuk atau mengeluarkan siapa pun yang melanggar ketentuan keamanan dan ketertiban.</li>
+                            <li>Segala jenis rekaman audio/video profesional dilarang keras tanpa persetujuan tertulis dari penyelenggara.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-6 d-flex flex-column justify-content-between">
-                <div>
-                    <span class="badge bg-secondary mb-2" th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}">Kategori</span>
-                    <h2 class="fw-bold mb-3" th:text="${ticket.nameEvent}"></h2>
-                    
-                    <div class="mb-4">
-                        <small class="text-secondary d-block mb-1">Harga Tiket</small>
-                        <h3 class="text-warning fw-bold">Rp <span th:text="${#numbers.formatDecimal(ticket.price, 0, 'POINT', 0, 'COMMA')}"></span></h3>
+        <!-- Right Column (Sticky Floating Ticket & Info Card) -->
+        <div class="col-lg-4">
+            <div class="card sticky-top shadow-lg" style="top: 100px; z-index: 100;">
+                <div class="p-3">
+                    <!-- Image Card Poster Container -->
+                    <div class="rounded-4 overflow-hidden mb-3 border border-secondary border-opacity-10" style="height: 220px;">
+                        <img th:if="${ticket.photo != null}"
+                             th:src="@{'/uploads/' + ${ticket.photo}}" class="w-100 h-100 object-fit-cover">
+                        <img th:unless="${ticket.photo != null}"
+                             src="https://placehold.co/600x400?text=Event+Poster" class="w-100 h-100 object-fit-cover">
                     </div>
 
                     <div class="mb-4">
-                        <small class="text-secondary d-block mb-1">Deskripsi Event</small>
-                        <p class="text-secondary-emphasis" style="line-height: 1.6;" th:text="${ticket.description != null ? ticket.description : 'Tidak ada deskripsi rinci untuk event ini.'}"></p>
+                        <small class="text-secondary">Harga mulai dari</small>
+                        <h3 class="text-warning fw-bold mb-0 mt-1">Rp <span th:text="${#numbers.formatDecimal(ticket.price, 0, 'POINT', 0, 'COMMA')}"></span></h3>
                     </div>
 
-                    <div class="mb-4">
-                        <span class="badge bg-success" th:if="${ticket.stock > 0}">Tersedia (<span th:text="${ticket.stock}"></span> tiket)</span>
-                        <span class="badge bg-danger" th:unless="${ticket.stock > 0}">Habis terjual</span>
-                    </div>
-                </div>
-
-                <div class="d-flex gap-3 mt-4">
-                    <!-- Beli langsung 1 tiket -->
-                    <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-success px-4 py-2.5 flex-grow-1 text-center" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">
-                        Beli Sekarang
+                    <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-primary w-100 py-3 fw-bold mb-4" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">
+                        Beli Tiket
                     </a>
 
-                    <!-- Tambah ke keranjang -->
-                    <form th:action="@{/cart/add}" method="post" class="flex-grow-1">
-                        <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
-                        <button class="btn btn-outline-primary w-100 py-2.5" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
-                    </form>
+                    <div class="border-top border-secondary border-opacity-20 pt-4">
+                        <h5 class="fw-bold mb-3 text-white" th:text="${ticket.nameEvent}"></h5>
+                        
+                        <div class="d-flex flex-column gap-3 small text-secondary">
+                            <span class="d-flex align-items-start gap-2.5">
+                                <i class="bi bi-geo-alt-fill text-warning mt-0.5" style="font-size: 1.1rem;"></i> 
+                                <span>Graha Unesa Surabaya, Kota Surabaya</span>
+                            </span>
+                            <span class="d-flex align-items-start gap-2.5">
+                                <i class="bi bi-calendar-event-fill text-warning mt-0.5" style="font-size: 1.1rem;"></i> 
+                                <span>11 Sep 2026, 19:00 - 22:00 WIB</span>
+                            </span>
+                            <span class="d-flex align-items-start gap-2.5">
+                                <i class="bi bi-tags-fill text-warning mt-0.5" style="font-size: 1.1rem;"></i> 
+                                <span><span th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}"></span> • Musik • Lainnya</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Organizer info section -->
+                    <div class="d-flex align-items-center gap-3 mt-4 border-top border-secondary border-opacity-20 pt-3">
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 40px; height: 40px; font-size: 0.95rem;">
+                            TH
+                        </div>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Diselenggarakan oleh</small>
+                            <strong class="text-white" style="font-size: 0.9rem;">Otello Asia dan Color Asia Live</strong>
+                        </div>
+                    </div>
+
+                    <!-- Share buttons section -->
+                    <div class="mt-4 border-top border-secondary border-opacity-20 pt-3">
+                        <small class="text-secondary d-block mb-2.5">Bagikan Event</small>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; padding: 0;"><i class="bi bi-link-45deg"></i></button>
+                            <button class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; padding: 0;"><i class="bi bi-whatsapp"></i></button>
+                            <button class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; padding: 0;"><i class="bi bi-facebook"></i></button>
+                            <button class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; padding: 0;"><i class="bi bi-twitter-x"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

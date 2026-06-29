@@ -34,7 +34,7 @@ public class AdminAuthController {
             Model model){
 
         Admin admin =
-                adminRepo.findByEmail(email);
+                adminRepo.findFirstByEmail(email);
 
         if(admin != null &&
            passwordEncoder.matches(password, admin.getPassword())){

@@ -37,7 +37,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String saveRegister(Customer customer) {
+    public String saveRegister(Customer customer, Model model) {
+
+        Customer existing = customerRepo.findFirstByEmail(customer.getEmail());
+        if (existing != null) {
+            model.addAttribute("error", "Email sudah terdaftar!");
+            model.addAttribute("customer", customer);
+            return "register";
+        }
 
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         customerRepo.save(customer);
@@ -52,7 +59,7 @@ public class AuthController {
             HttpSession session,
             Model model) {
 
-        Customer customer = customerRepo.findByEmail(email);
+        Customer customer = customerRepo.findFirstByEmail(email);
 
         if(customer != null &&
            passwordEncoder.matches(password, customer.getPassword())) {

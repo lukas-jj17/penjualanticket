@@ -2,15 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Detail Event</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Event - TicketHub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/Style.css}">
 </head>
 <body>
 
 <nav class="navbar navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="/dashboard">TicketHub</a>
-        <div>
+        <a class="navbar-brand" href="/dashboard">Ticket<span>Hub</span></a>
+        <div class="d-flex gap-2">
             <a href="/cart" class="btn btn-outline-light btn-sm">Keranjang</a>
             <a href="/dashboard" class="btn btn-outline-light btn-sm">Kembali</a>
         </div>
@@ -18,35 +20,52 @@
 </nav>
 
 <div class="container mt-5">
-    <div class="row">
+    <div class="card p-4 p-md-5">
+        <div class="row g-4 md-g-5">
+            <div class="col-md-6">
+                <div class="position-relative rounded-4 overflow-hidden shadow-lg border border-secondary border-opacity-20" style="max-height: 480px;">
+                    <img th:if="${ticket.photo != null}"
+                         th:src="@{'/uploads/' + ${ticket.photo}}" class="w-100 h-100 object-fit-cover img-fluid" style="border-radius: 12px;">
+                    <img th:unless="${ticket.photo != null}"
+                         src="https://placehold.co/600x400?text=Event+Poster" class="w-100 h-100 object-fit-cover img-fluid" style="border-radius: 12px;">
+                </div>
+            </div>
 
-        <div class="col-md-6">
-            <img th:if="${ticket.photo != null}"
-                 th:src="@{'/uploads/' + ${ticket.photo}}" class="img-fluid rounded">
-            <img th:unless="${ticket.photo != null}"
-                 src="https://placehold.co/600x400?text=Event" class="img-fluid rounded">
-        </div>
+            <div class="col-md-6 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="badge bg-secondary mb-2" th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}">Kategori</span>
+                    <h2 class="fw-bold mb-3" th:text="${ticket.nameEvent}"></h2>
+                    
+                    <div class="mb-4">
+                        <small class="text-secondary d-block mb-1">Harga Tiket</small>
+                        <h3 class="text-warning fw-bold">Rp <span th:text="${#numbers.formatDecimal(ticket.price, 0, 'POINT', 0, 'COMMA')}"></span></h3>
+                    </div>
 
-        <div class="col-md-6">
-            <h2 th:text="${ticket.nameEvent}"></h2>
-            <h4 class="text-success">Rp. <span th:text="${ticket.price}"></span></h4>
-            <p th:text="${ticket.description}"></p>
-            <p>Stok : <span th:text="${ticket.stock}"></span></p>
+                    <div class="mb-4">
+                        <small class="text-secondary d-block mb-1">Deskripsi Event</small>
+                        <p class="text-secondary-emphasis" style="line-height: 1.6;" th:text="${ticket.description != null ? ticket.description : 'Tidak ada deskripsi rinci untuk event ini.'}"></p>
+                    </div>
 
-            <div class="d-flex gap-2">
-                <!-- Beli langsung 1 tiket -->
-                <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-success">
-                    Beli Sekarang
-                </a>
+                    <div class="mb-4">
+                        <span class="badge bg-success" th:if="${ticket.stock > 0}">Tersedia (<span th:text="${ticket.stock}"></span> tiket)</span>
+                        <span class="badge bg-danger" th:unless="${ticket.stock > 0}">Habis terjual</span>
+                    </div>
+                </div>
 
-                <!-- Tambah ke keranjang -->
-                <form th:action="@{/cart/add}" method="post">
-                    <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
-                    <button class="btn btn-outline-primary">+ Keranjang</button>
-                </form>
+                <div class="d-flex gap-3 mt-4">
+                    <!-- Beli langsung 1 tiket -->
+                    <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-success px-4 py-2.5 flex-grow-1 text-center" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">
+                        Beli Sekarang
+                    </a>
+
+                    <!-- Tambah ke keranjang -->
+                    <form th:action="@{/cart/add}" method="post" class="flex-grow-1">
+                        <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                        <button class="btn btn-outline-primary w-100 py-2.5" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                    </form>
+                </div>
             </div>
         </div>
-
     </div>
 </div>
 

@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PenjualanticketApplication<penjualanticket>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.pbo2.penjualanticket.PenjualanticketApplication",
+            "projectName": "penjualanticket",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -5,81 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Pembelian - Admin TicketHub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/Style.css}">
 </head>
 <body>
 
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="/admin/dashboard">Admin Ticket<span>Hub</span></a>
-        <div>
-            <a href="/admin/event" class="btn btn-outline-light btn-sm me-1">Kelola Event</a>
-            <a href="/admin/riwayat" class="btn btn-light btn-sm me-1">Riwayat Pembelian</a>
-            <a href="/admin/logout" class="btn btn-danger btn-sm">Logout</a>
+<div class="admin-layout">
+    <!-- Left Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-brand">
+            Admin Ticket<span>Hub</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li><a href="/admin/event"><i class="bi bi-calendar-event"></i> Kelola Event</a></li>
+            <li><a href="/admin/riwayat" class="active"><i class="bi bi-receipt"></i> Riwayat Pembelian</a></li>
+            <li><a href="/admin/customer"><i class="bi bi-people"></i> Kelola Customer</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="/admin/logout" class="btn btn-danger btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</a>
         </div>
     </div>
-</nav>
 
-<div class="container mt-5" style="max-width: 1200px;">
-    <h2 class="mb-4 fw-bold">Daftar Riwayat Pembelian</h2>
+    <!-- Main Content Area -->
+    <div class="admin-content">
+        <h2 class="mb-4 fw-bold text-white">Daftar Riwayat Pembelian</h2>
 
-    <div th:if="${#lists.isEmpty(riwayat)}" class="alert alert-info py-4 text-center">
-        <p class="mb-0">Belum ada riwayat transaksi pembelian tiket.</p>
-    </div>
+        <div th:if="${#lists.isEmpty(riwayat)}" class="alert alert-info py-4 text-center">
+            <p class="mb-0">Belum ada riwayat transaksi pembelian tiket.</p>
+        </div>
 
-    <div th:unless="${#lists.isEmpty(riwayat)}" class="card p-3 p-md-4">
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>No Faktur</th>
-                        <th>Customer</th>
-                        <th>Tanggal</th>
-                        <th>Total Bayar</th>
-                        <th>Metode</th>
-                        <th>Ref ID (bayar.gg)</th>
-                        <th>Status</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="r : ${riwayat}">
-                        <td class="fw-bold text-white" th:text="${r.noFaktur}"></td>
-                        <td>
-                            <div class="fw-semibold text-white" th:text="${r.customer != null ? r.customer.name : 'Guest'}"></div>
-                            <small class="text-secondary" th:text="${r.customer != null ? r.customer.noTlp : '-'}"></small>
-                        </td>
-                        <td th:text="${r.tanggal}"></td>
-                        <td class="text-warning fw-semibold">Rp <span th:text="${#numbers.formatDecimal(r.totalBayar, 0, 'POINT', 0, 'COMMA')}"></span></td>
-                        <td class="text-uppercase fw-bold text-secondary" th:text="${r.paymentMethod != null ? r.paymentMethod : '-'}"></td>
-                        <td>
-                            <small class="font-monospace text-secondary" th:text="${r.referenceId != null ? r.referenceId : '-'}"></small>
-                        </td>
-                        <td>
-                            <span th:if="${r.paymentStatus == 'SUCCESS'}" class="badge bg-success">Lunas</span>
-                            <span th:if="${r.paymentStatus == 'PENDING'}" class="badge bg-warning text-dark">Pending</span>
-                            <span th:if="${r.paymentStatus == 'EXPIRED'}" class="badge bg-secondary">Expired</span>
-                            <span th:if="${r.paymentStatus == 'FAILED'}" class="badge bg-danger">Gagal</span>
-                        </td>
-                        <td class="text-center">
-                            <div class="d-flex justify-content-center align-items-center gap-2">
-                                <a th:href="@{'/nota/' + ${r.idPenjualan}}" target="_blank" class="btn btn-outline-primary btn-sm px-3">Nota</a>
-                                
-                                <form th:action="@{/admin/riwayat/update-status}" method="post" class="m-0">
-                                    <input type="hidden" name="idPenjualan" th:value="${r.idPenjualan}">
-                                    <select name="status" class="form-select form-select-sm" style="width: 120px; font-size: 0.85rem;" onchange="this.form.submit()">
-                                        <option value="" disabled selected>Update</option>
-                                        <option value="PENDING">PENDING</option>
-                                        <option value="SUCCESS">SUCCESS</option>
-                                        <option value="EXPIRED">EXPIRED</option>
-                                        <option value="FAILED">FAILED</option>
-                                    </select>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div th:unless="${#lists.isEmpty(riwayat)}" class="card p-3 p-md-4">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>No Faktur</th>
+                            <th>Customer</th>
+                            <th>Tanggal</th>
+                            <th>Total Bayar</th>
+                            <th>Metode</th>
+                            <th>Ref ID (bayar.gg)</th>
+                            <th>Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${riwayat}">
+                            <td class="fw-bold text-white" th:text="${r.noFaktur}"></td>
+                            <td>
+                                <div class="fw-semibold text-white" th:text="${r.customer != null ? r.customer.name : 'Guest'}"></div>
+                                <small class="text-secondary" th:text="${r.customer != null ? r.customer.noTlp : '-'}"></small>
+                            </td>
+                            <td th:text="${r.tanggal}"></td>
+                            <td class="text-warning fw-semibold">Rp <span th:text="${#numbers.formatDecimal(r.totalBayar, 0, 'POINT', 0, 'COMMA')}"></span></td>
+                            <td class="text-uppercase fw-bold text-secondary" th:text="${r.paymentMethod != null ? r.paymentMethod : '-'}"></td>
+                            <td>
+                                <small class="font-monospace text-secondary" th:text="${r.referenceId != null ? r.referenceId : '-'}"></small>
+                            </td>
+                            <td>
+                                <span th:if="${r.paymentStatus == 'SUCCESS'}" class="badge bg-success">Lunas</span>
+                                <span th:if="${r.paymentStatus == 'PENDING'}" class="badge bg-warning text-dark">Pending</span>
+                                <span th:if="${r.paymentStatus == 'EXPIRED'}" class="badge bg-secondary">Expired</span>
+                                <span th:if="${r.paymentStatus == 'FAILED'}" class="badge bg-danger">Gagal</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <a th:href="@{'/nota/' + ${r.idPenjualan}}" target="_blank" class="btn btn-outline-primary btn-sm px-3">Nota</a>
+                                    
+                                    <form th:action="@{/admin/riwayat/update-status}" method="post" class="m-0">
+                                        <input type="hidden" name="idPenjualan" th:value="${r.idPenjualan}">
+                                        <select name="status" class="form-select form-select-sm" style="width: 120px; font-size: 0.85rem;" onchange="this.form.submit()">
+                                            <option value="" disabled selected>Update</option>
+                                            <option value="PENDING">PENDING</option>
+                                            <option value="SUCCESS">SUCCESS</option>
+                                            <option value="EXPIRED">EXPIRED</option>
+                                            <option value="FAILED">FAILED</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

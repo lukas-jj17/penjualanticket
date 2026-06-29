@@ -576,3 +576,97 @@ body {
 .card:hover .card-img-zoom {
     transform: scale(1.08);
 }
+
+/* Admin Layout with Sidebar */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 280px;
+    background: #090d16;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    flex-shrink: 0;
+}
+
+.sidebar-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 3rem;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    padding-left: 0.5rem;
+}
+
+.sidebar-brand span {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+}
+
+.sidebar-menu li a i {
+    font-size: 1.2rem;
+}
+
+.sidebar-menu li a:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-menu li a.active {
+    color: #ffffff !important;
+    background: var(--primary-gradient);
+    box-shadow: var(--glow-shadow);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.admin-content {
+    flex-grow: 1;
+    padding: 3rem;
+    background: radial-gradient(circle at 50% 0%, #111827 0%, var(--bg-primary) 70%);
+    overflow-y: auto;
+    height: 100vh;
+}
+
+/* Stat Card Link Wrapper */
+.stat-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.stat-card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}

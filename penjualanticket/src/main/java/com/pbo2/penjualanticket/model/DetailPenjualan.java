@@ -22,7 +22,17 @@ public class DetailPenjualan {
     @JoinColumn(name = "id_tiket")
     private Ticket ticket;
 
+    private String selectedCategory;
+
     public DetailPenjualan() {}
+
+    public String getSelectedCategory() {
+        return selectedCategory;
+    }
+
+    public void setSelectedCategory(String selectedCategory) {
+        this.selectedCategory = selectedCategory;
+    }
 
     public Integer getIdDetails() {
         return idDetails;

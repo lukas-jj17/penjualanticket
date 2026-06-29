@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Event - TicketHub</title>
+    <title>Detail Event - Eventix</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/Style.css}">
@@ -12,7 +12,7 @@
 
 <nav class="navbar navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="/dashboard">Ticket<span>Hub</span></a>
+        <a class="navbar-brand" href="/dashboard">Event<span>ix</span></a>
         <div class="d-flex gap-2">
             <a href="/cart" class="btn btn-outline-light btn-sm">Keranjang</a>
             <a href="/dashboard" class="btn btn-outline-light btn-sm">Kembali</a>
@@ -25,11 +25,21 @@
     <div class="container event-banner-content">
         <h1 class="fw-bold text-white mb-3" th:text="${ticket.nameEvent}"></h1>
         <div class="d-flex flex-wrap gap-4 text-white text-opacity-80 small mb-0">
-            <span class="d-flex align-items-center gap-2"><i class="bi bi-geo-alt-fill text-warning"></i> Graha Unesa Surabaya, Kota Surabaya</span>
-            <span class="d-flex align-items-center gap-2"><i class="bi bi-calendar-event-fill text-warning"></i> 11 Sep 2026, 19:00 - 22:00 WIB</span>
+            <span class="d-flex align-items-center gap-2">
+                <i class="bi bi-geo-alt-fill text-warning"></i>
+                <span th:text="${(ticket.location != null and ticket.location != '' ? ticket.location : 'Venue Utama') + ', ' + (ticket.city != null and ticket.city != '' ? ticket.city : 'Jakarta')}"></span>
+            </span>
+            <span class="d-flex align-items-center gap-2">
+                <i class="bi bi-calendar-event-fill text-warning"></i>
+                <span>
+                    <span th:text="${ticket.formattedEventDate != null and ticket.formattedEventDate != '' ? ticket.formattedEventDate : '11 Sep 2026'}"></span>
+                    <span th:if="${ticket.startDay != null and ticket.startDay != '' and ticket.endDay != null and ticket.endDay != ''}" th:text="' (' + ${ticket.startDay} + ' - ' + ${ticket.endDay} + ')'"></span>
+                    <span th:text="${ticket.eventTime != null and ticket.eventTime != '' ? ', ' + ticket.eventTime : ', 19:00 WIB'}"></span>
+                </span>
+            </span>
             <span class="d-flex align-items-center gap-2">
                 <i class="bi bi-tags-fill text-warning"></i> 
-                <span th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}"></span> • Musik • Lainnya
+                <span th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}"></span>
             </span>
         </div>
     </div>
@@ -67,27 +77,158 @@
                     <div class="card p-4 p-md-5">
                         <h4 class="fw-bold mb-4 text-white"><i class="bi bi-ticket-perforated-fill text-warning me-2"></i> Kategori Tiket</h4>
                         
-                        <!-- Single General Ticket Item based on Event Model -->
-                        <div class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
-                            <div>
-                                <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
-                                <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
-                                <h5 class="fw-bold text-white mb-1">GENERAL SALES (ALL IN)</h5>
-                                <small class="text-secondary">Penjualan berakhir 11 Sep 2026 • 19:00 WIB</small>
-                            </div>
-                            <div class="text-sm-end mt-3 mt-sm-0">
-                                <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.price, 0, 'POINT', 0, 'COMMA')}"></span></h4>
-                                <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
-                                
-                                <div class="d-flex gap-2 justify-content-sm-end">
-                                    <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
-                                    <form th:action="@{/cart/add}" method="post" class="m-0">
-                                        <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
-                                        <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
-                                    </form>
+                        <!-- Jika kategori kustom dinonaktifkan -->
+                        <div th:if="${ticket.hasCustomCategories == null or !ticket.hasCustomCategories}">
+                            <div class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
+                                <div>
+                                    <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
+                                    <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
+                                    <h5 class="fw-bold text-white mb-1">GENERAL SALES (ALL IN)</h5>
+                                    <small class="text-secondary" th:text="${'Penjualan berakhir ' + (ticket.formattedEventDate != null ? ticket.formattedEventDate : '11 Sep 2026') + ' • ' + (ticket.eventTime != null ? ticket.eventTime : '19:00 WIB')}"></small>
+                                </div>
+                                <div class="text-sm-end mt-3 mt-sm-0">
+                                    <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.price, 0, 'POINT', 0, 'COMMA')}"></span></h4>
+                                    <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
+                                    
+                                    <div class="d-flex gap-2 justify-content-sm-end">
+                                        <a th:href="@{'/checkout/' + ${ticket.idTiket}}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
+                                        <form th:action="@{/cart/add}" method="post" class="m-0">
+                                            <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                                            <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Jika kategori kustom (Reguler, VIP, Early Bird) diaktifkan -->
+                        <div th:if="${ticket.hasCustomCategories != null and ticket.hasCustomCategories}">
+                            
+                            <!-- Reguler (Selalu Tampil menggunakan Harga Baseline) -->
+                            <div class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
+                                <div>
+                                    <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
+                                    <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
+                                    <h5 class="fw-bold text-white mb-1">REGULER TICKET</h5>
+                                    <small class="text-secondary">Akses masuk standard event</small>
+                                </div>
+                                <div class="text-sm-end mt-3 mt-sm-0">
+                                    <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.price, 0, 'POINT', 0, 'COMMA')}"></span></h4>
+                                    <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
+                                    
+                                    <div class="d-flex gap-2 justify-content-sm-end">
+                                        <a th:href="@{'/checkout/' + ${ticket.idTiket}(selectedCategory='REGULER', selectedPrice=${ticket.price})}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
+                                        <form th:action="@{/cart/add}" method="post" class="m-0">
+                                            <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                                            <input type="hidden" name="selectedCategory" value="REGULER">
+                                            <input type="hidden" name="selectedPrice" th:value="${ticket.price}">
+                                            <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- VIP -->
+                            <div th:if="${ticket.vipPrice != null and ticket.vipPrice > 0}" class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
+                                <div>
+                                    <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
+                                    <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
+                                    <h5 class="fw-bold text-white mb-1"><i class="bi bi-crown-fill text-warning me-1"></i> VIP TICKET</h5>
+                                    <small class="text-secondary">Fasilitas VIP &amp; Premium seat view</small>
+                                </div>
+                                <div class="text-sm-end mt-3 mt-sm-0">
+                                    <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.vipPrice, 0, 'POINT', 0, 'COMMA')}"></span></h4>
+                                    <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
+                                    
+                                    <div class="d-flex gap-2 justify-content-sm-end">
+                                        <a th:href="@{'/checkout/' + ${ticket.idTiket}(selectedCategory='VIP', selectedPrice=${ticket.vipPrice})}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
+                                        <form th:action="@{/cart/add}" method="post" class="m-0">
+                                            <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                                            <input type="hidden" name="selectedCategory" value="VIP">
+                                            <input type="hidden" name="selectedPrice" th:value="${ticket.vipPrice}">
+                                            <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Early Bird -->
+                            <div th:if="${ticket.earlyBirdPrice != null and ticket.earlyBirdPrice > 0}" class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
+                                <div>
+                                    <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
+                                    <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
+                                    <h5 class="fw-bold text-white mb-1">EARLY BIRD TICKET</h5>
+                                    <small class="text-secondary">Promo terbatas harga tiket murah</small>
+                                </div>
+                                <div class="text-sm-end mt-3 mt-sm-0">
+                                    <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.earlyBirdPrice, 0, 'POINT', 0, 'COMMA')}"></span></h4>
+                                    <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
+                                    
+                                    <div class="d-flex gap-2 justify-content-sm-end">
+                                        <a th:href="@{'/checkout/' + ${ticket.idTiket}(selectedCategory='EARLY BIRD', selectedPrice=${ticket.earlyBirdPrice})}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
+                                        <form th:action="@{/cart/add}" method="post" class="m-0">
+                                            <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                                            <input type="hidden" name="selectedCategory" value="EARLY BIRD">
+                                            <input type="hidden" name="selectedPrice" th:value="${ticket.earlyBirdPrice}">
+                                            <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jika harga hari kunjungan (Weekday / Weekend) diaktifkan -->
+                        <div th:if="${ticket.hasDayPrices != null and ticket.hasDayPrices}">
+                            
+                            <!-- Weekday -->
+                            <div th:if="${ticket.weekdayPrice != null and ticket.weekdayPrice > 0}" class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
+                                <div>
+                                    <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
+                                    <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
+                                    <h5 class="fw-bold text-white mb-1">WEEKDAY TICKET (Senin - Jumat)</h5>
+                                    <small class="text-secondary">Tiket khusus hari kerja (Senin - Jumat)</small>
+                                </div>
+                                <div class="text-sm-end mt-3 mt-sm-0">
+                                    <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.weekdayPrice, 0, 'POINT', 0, 'COMMA')}"></span></h4>
+                                    <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
+                                    
+                                    <div class="d-flex gap-2 justify-content-sm-end">
+                                        <a th:href="@{'/checkout/' + ${ticket.idTiket}(selectedCategory='WEEKDAY (SENIN-JUMAT)', selectedPrice=${ticket.weekdayPrice})}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
+                                        <form th:action="@{/cart/add}" method="post" class="m-0">
+                                            <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                                            <input type="hidden" name="selectedCategory" value="WEEKDAY (SENIN-JUMAT)">
+                                            <input type="hidden" name="selectedPrice" th:value="${ticket.weekdayPrice}">
+                                            <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Weekend -->
+                            <div th:if="${ticket.weekendPrice != null and ticket.weekendPrice > 0}" class="ticket-type-item p-4 mb-3 rounded border border-secondary border-opacity-20 d-flex flex-wrap justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.02);">
+                                <div>
+                                    <span class="badge bg-success mb-2" th:if="${ticket.stock > 0}">Available</span>
+                                    <span class="badge bg-danger mb-2" th:unless="${ticket.stock > 0}">Sold Out</span>
+                                    <h5 class="fw-bold text-white mb-1">WEEKEND TICKET (Sabtu - Minggu)</h5>
+                                    <small class="text-secondary">Tiket khusus akhir pekan (Sabtu - Minggu)</small>
+                                </div>
+                                <div class="text-sm-end mt-3 mt-sm-0">
+                                    <h4 class="text-warning fw-bold mb-1">Rp <span th:text="${#numbers.formatDecimal(ticket.weekendPrice, 0, 'POINT', 0, 'COMMA')}"></span></h4>
+                                    <small class="text-secondary d-block mb-3">Stok: <span th:text="${ticket.stock}"></span> tiket tersisa</small>
+                                    
+                                    <div class="d-flex gap-2 justify-content-sm-end">
+                                        <a th:href="@{'/checkout/' + ${ticket.idTiket}(selectedCategory='WEEKEND (SABTU-MINGGU)', selectedPrice=${ticket.weekendPrice})}" class="btn btn-success btn-sm px-3" th:classappend="${ticket.stock <= 0} ? 'disabled' : ''">Beli</a>
+                                        <form th:action="@{/cart/add}" method="post" class="m-0">
+                                            <input type="hidden" name="idTicket" th:value="${ticket.idTiket}">
+                                            <input type="hidden" name="selectedCategory" value="WEEKEND (SABTU-MINGGU)">
+                                            <input type="hidden" name="selectedPrice" th:value="${ticket.weekendPrice}">
+                                            <button class="btn btn-outline-primary btn-sm px-3" th:disabled="${ticket.stock <= 0}">+ Keranjang</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -133,27 +274,20 @@
                         <div class="d-flex flex-column gap-3 small text-secondary">
                             <span class="d-flex align-items-start gap-2.5">
                                 <i class="bi bi-geo-alt-fill text-warning mt-0.5" style="font-size: 1.1rem;"></i> 
-                                <span>Graha Unesa Surabaya, Kota Surabaya</span>
+                                <span th:text="${(ticket.location != null and ticket.location != '' ? ticket.location : 'Venue Utama') + ', ' + (ticket.city != null and ticket.city != '' ? ticket.city : 'Jakarta')}"></span>
                             </span>
                             <span class="d-flex align-items-start gap-2.5">
                                 <i class="bi bi-calendar-event-fill text-warning mt-0.5" style="font-size: 1.1rem;"></i> 
-                                <span>11 Sep 2026, 19:00 - 22:00 WIB</span>
+                                <span>
+                                    <span th:text="${ticket.formattedEventDate != null and ticket.formattedEventDate != '' ? ticket.formattedEventDate : '11 Sep 2026'}"></span>
+                                    <span th:if="${ticket.startDay != null and ticket.startDay != '' and ticket.endDay != null and ticket.endDay != ''}" th:text="' (' + ${ticket.startDay} + ' - ' + ${ticket.endDay} + ')'"></span>
+                                    <span th:text="${ticket.eventTime != null and ticket.eventTime != '' ? ', ' + ticket.eventTime : ', 19:00 WIB'}"></span>
+                                </span>
                             </span>
-                            <span class="d-flex align-items-start gap-2.5">
-                                <i class="bi bi-tags-fill text-warning mt-0.5" style="font-size: 1.1rem;"></i> 
-                                <span><span th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}"></span> • Musik • Lainnya</span>
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Organizer info section -->
-                    <div class="d-flex align-items-center gap-3 mt-4 border-top border-secondary border-opacity-20 pt-3">
-                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 40px; height: 40px; font-size: 0.95rem;">
-                            TH
-                        </div>
-                        <div>
-                            <small class="text-muted d-block" style="font-size: 0.75rem;">Diselenggarakan oleh</small>
-                            <strong class="text-white" style="font-size: 0.9rem;">Otello Asia dan Color Asia Live</strong>
+                             <span class="d-flex align-items-start gap-2.5">
+                                 <i class="bi bi-tags-fill text-warning mt-0.5" style="font-size: 1.1rem;"></i> 
+                                 <span th:text="${ticket.category != null ? ticket.category.nameCategory : 'Event'}"></span>
+                             </span>
                         </div>
                     </div>
 

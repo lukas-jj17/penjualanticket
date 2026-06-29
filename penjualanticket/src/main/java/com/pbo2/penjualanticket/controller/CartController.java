@@ -64,6 +64,8 @@ public class CartController {
     public String addToCart(
             @RequestParam Integer idTicket,
             @RequestParam(required = false) Integer qty,
+            @RequestParam(value = "selectedCategory", required = false) String selectedCategory,
+            @RequestParam(value = "selectedPrice", required = false) Double selectedPrice,
             HttpSession session) {
 
         Ticket ticket = ticketRepo.findById(idTicket).orElse(null);
@@ -74,16 +76,20 @@ public class CartController {
         int tambah = (qty == null || qty < 1) ? 1 : qty;
         List<CartItem> cart = getCart(session);
 
-        // Jika tiket sudah ada di keranjang, tambah qty-nya
+        // Jika tiket dengan kategori yang sama sudah ada di keranjang, tambah qty-nya
         CartItem existing = cart.stream()
-                .filter(i -> i.getTicket().getIdTiket().equals(idTicket))
+                .filter(i -> i.getTicket().getIdTiket().equals(idTicket) && 
+                             java.util.Objects.equals(i.getSelectedCategory(), selectedCategory))
                 .findFirst()
                 .orElse(null);
 
         if (existing != null) {
             existing.setQty(existing.getQty() + tambah);
         } else {
-            cart.add(new CartItem(ticket, tambah));
+            CartItem item = new CartItem(ticket, tambah);
+            item.setSelectedCategory(selectedCategory);
+            item.setSelectedPrice(selectedPrice);
+            cart.add(item);
         }
 
         return "redirect:/cart";
@@ -92,10 +98,12 @@ public class CartController {
     @PostMapping("/remove")
     public String removeFromCart(
             @RequestParam Integer idTicket,
+            @RequestParam(value = "selectedCategory", required = false) String selectedCategory,
             HttpSession session) {
 
         List<CartItem> cart = getCart(session);
-        cart.removeIf(i -> i.getTicket().getIdTiket().equals(idTicket));
+        cart.removeIf(i -> i.getTicket().getIdTiket().equals(idTicket) && 
+                           java.util.Objects.equals(i.getSelectedCategory(), selectedCategory));
         return "redirect:/cart";
     }
 

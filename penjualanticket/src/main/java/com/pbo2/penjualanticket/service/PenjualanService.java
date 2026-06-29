@@ -70,7 +70,7 @@ public class PenjualanService {
                 throw new StockException("Stok tiket \"" + ticket.getNameEvent()
                         + "\" tidak mencukupi (sisa " + available + ").");
             }
-            total += ticket.getPrice() * qty;
+            total += item.getSubtotal();
         }
 
         // Buat header penjualan
@@ -85,13 +85,14 @@ public class PenjualanService {
         for (CartItem item : items) {
             Ticket ticket = ticketRepo.findById(item.getTicket().getIdTiket()).get();
             int qty = (item.getQty() == null || item.getQty() < 1) ? 1 : item.getQty();
-            double subtotal = ticket.getPrice() * qty;
+            double subtotal = item.getSubtotal();
 
             DetailPenjualan detail = new DetailPenjualan();
             detail.setPenjualan(penjualan);
             detail.setTicket(ticket);
             detail.setQty(qty);
             detail.setSubtotal(subtotal);
+            detail.setSelectedCategory(item.getSelectedCategory());
             detailRepo.save(detail);
 
             ticket.setStock(ticket.getStock() - qty);

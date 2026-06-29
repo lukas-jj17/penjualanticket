@@ -27,6 +27,7 @@ public class DashboardController {
     public String dashboard(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String city,
             Model model) {
 
         boolean adaKeyword = StringUtils.hasText(keyword);
@@ -43,10 +44,25 @@ public class DashboardController {
             events = ticketRepo.findAll();
         }
 
+        // Apply city filter (searching in city, name, or description)
+        if (StringUtils.hasText(city)) {
+            final String searchCity = city.toLowerCase();
+            events = events.stream()
+                .filter(e -> (e.getCity() != null && e.getCity().toLowerCase().contains(searchCity)) ||
+                             e.getNameEvent().toLowerCase().contains(searchCity) || 
+                             (e.getDescription() != null && e.getDescription().toLowerCase().contains(searchCity)))
+                .toList();
+        }
+
+        // Split trending events: let's pick first 4 events
+        List<Ticket> trendingEvents = events.stream().limit(4).toList();
+
         model.addAttribute("events", events);
+        model.addAttribute("trendingEvents", trendingEvents);
         model.addAttribute("categories", categoryRepo.findAll());
         model.addAttribute("keyword", keyword);
         model.addAttribute("categoryId", categoryId);
+        model.addAttribute("city", city);
         return "dashbord";
     }
 

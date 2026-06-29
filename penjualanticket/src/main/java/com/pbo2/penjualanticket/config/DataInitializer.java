@@ -48,17 +48,44 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // Kategori + contoh event
-        if (categoryRepo.count() == 0) {
-            TicketCategory konser = simpanKategori("Konser");
-            TicketCategory olahraga = simpanKategori("Olahraga");
-            TicketCategory teater = simpanKategori("Teater");
+        String[] defaultCategories = {
+            "Atraksi & Taman Hiburan",
+            "Balapan & Ketahanan",
+            "Festival & Pameran",
+            "Komunitas & Perkumpulan",
+            "Konferensi & Seminar",
+            "Konser",
+            "Pertunjukan & Penampilan",
+            "Sesi Olahraga",
+            "Tur & Perjalanan",
+            "Turnamen & Kompetisi",
+            "Workshop & Pelatihan"
+        };
 
-            simpanTicket("Konser Musik Akbar 2026", 250000.0, 100,
-                    "Konser musik terbesar tahun ini dengan deretan musisi ternama.", konser);
-            simpanTicket("Final Liga Nasional", 150000.0, 200,
-                    "Saksikan laga final memperebutkan gelar juara.", olahraga);
-            simpanTicket("Pertunjukan Teater Klasik", 75000.0, 80,
-                    "Drama teater klasik yang memukau sepanjang masa.", teater);
+        for (String catName : defaultCategories) {
+            boolean exists = categoryRepo.findAll().stream()
+                    .anyMatch(c -> c.getNameCategory().equalsIgnoreCase(catName));
+            if (!exists) {
+                simpanKategori(catName);
+            }
+        }
+
+        if (ticketRepo.count() == 0) {
+            TicketCategory konser = categoryRepo.findAll().stream()
+                    .filter(c -> c.getNameCategory().equalsIgnoreCase("Konser"))
+                    .findFirst().orElse(null);
+            TicketCategory olahraga = categoryRepo.findAll().stream()
+                    .filter(c -> c.getNameCategory().equalsIgnoreCase("Sesi Olahraga"))
+                    .findFirst().orElse(null);
+
+            if (konser != null) {
+                simpanTicket("Konser Musik Akbar 2026", 250000.0, 100,
+                        "Konser musik terbesar tahun ini dengan deretan musisi ternama.", konser);
+            }
+            if (olahraga != null) {
+                simpanTicket("Final Liga Nasional", 150000.0, 200,
+                        "Saksikan laga final memperebutkan gelar juara.", olahraga);
+            }
         }
     }
 

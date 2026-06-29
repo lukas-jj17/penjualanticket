@@ -32,6 +32,8 @@ public class CheckoutController {
     @GetMapping("/checkout/{id}")
     public String checkoutPage(
             @PathVariable Integer id,
+            @RequestParam(value = "selectedCategory", required = false) String selectedCategory,
+            @RequestParam(value = "selectedPrice", required = false) Double selectedPrice,
             @RequestParam(value = "error", required = false) String error,
             Model model){
 
@@ -41,6 +43,9 @@ public class CheckoutController {
         }
 
         model.addAttribute("ticket", ticket);
+        model.addAttribute("selectedCategory", selectedCategory);
+        model.addAttribute("selectedPrice", selectedPrice != null ? selectedPrice : ticket.getPrice());
+        
         if (error != null) {
             model.addAttribute("error", error);
         }
@@ -51,6 +56,8 @@ public class CheckoutController {
     public String saveCheckout(
             @RequestParam Integer idTicket,
             @RequestParam Integer qty,
+            @RequestParam(value = "selectedCategory", required = false) String selectedCategory,
+            @RequestParam(value = "selectedPrice", required = false) Double selectedPrice,
             @RequestParam(value = "paymentMethod", required = false) String paymentMethod,
             HttpSession session){
 
@@ -69,8 +76,10 @@ public class CheckoutController {
         }
 
         try {
-            Penjualan penjualan = penjualanService.buatPenjualan(
-                    customer, List.of(new CartItem(ticket, qty)));
+            CartItem item = new CartItem(ticket, qty);
+            item.setSelectedCategory(selectedCategory);
+            item.setSelectedPrice(selectedPrice);
+            Penjualan penjualan = penjualanService.buatPenjualan(customer, List.of(item));
             
             penjualan.setPaymentMethod(paymentMethod != null && !paymentMethod.trim().isEmpty() ? paymentMethod.toUpperCase() : "VA (HOSTED)");
             penjualan.setPaymentStatus("PENDING");

@@ -9,6 +9,8 @@ public class CartItem implements Serializable {
 
     private Ticket ticket;
     private Integer qty;
+    private String selectedCategory;
+    private Double selectedPrice;
 
     public CartItem() {}
 
@@ -33,7 +35,26 @@ public class CartItem implements Serializable {
         this.qty = qty;
     }
 
+    public String getSelectedCategory() {
+        return selectedCategory;
+    }
+
+    public void setSelectedCategory(String selectedCategory) {
+        this.selectedCategory = selectedCategory;
+    }
+
+    public Double getSelectedPrice() {
+        return selectedPrice;
+    }
+
+    public void setSelectedPrice(Double selectedPrice) {
+        this.selectedPrice = selectedPrice;
+    }
+
     public Double getSubtotal() {
+        if (selectedPrice != null) {
+            return selectedPrice * qty;
+        }
         if (ticket == null || ticket.getPrice() == null || qty == null) {
             return 0.0;
         }

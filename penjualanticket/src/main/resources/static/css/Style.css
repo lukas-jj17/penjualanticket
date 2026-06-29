@@ -670,3 +670,34 @@ body {
     text-decoration: none;
     color: inherit;
 }
+
+/* Rounded Pill Styling */
+.active-pill {
+    background: var(--primary-gradient) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    box-shadow: var(--glow-shadow);
+}
+
+/* Hero Carousel styling */
+.carousel-slide-content {
+    transition: all 0.5s ease-in-out;
+}
+
+.carousel-indicators [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--text-secondary);
+    border: none;
+    margin: 0 5px;
+    opacity: 0.4;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-indicators .active {
+    width: 28px;
+    border-radius: 6px;
+    background-color: var(--accent) !important;
+    opacity: 1;
+}
